@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Penjualan 2024</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50:'#eff6ff', 100:'#dbeafe', 500:'#3b82f6', 600:'#2563eb', 700:'#1d4ed8' },
+            surface: '#f8fafc'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen font-sans">
+
+  <!-- HEADER -->
+  <header class="bg-gradient-to-r from-blue-700 to-blue-500 text-white shadow-lg">
+    <div class="max-w-screen-2xl mx-auto px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <svg class="w-8 h-8 opacity-90" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight leading-none">Dashboard Penjualan</h1>
+          <p class="text-blue-200 text-xs mt-0.5">Analitik Komprehensif Tahun 2024</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <select id="filterMonth" class="filter-select text-sm bg-white/10 border border-white/30 rounded-lg px-3 py-1.5 text-white focus:outline-none focus:ring-2 focus:ring-white/50">
+          <option value="all">Semua Bulan</option>
+          <option value="1">Januari</option><option value="2">Februari</option>
+          <option value="3">Maret</option><option value="4">April</option>
+          <option value="5">Mei</option><option value="6">Juni</option>
+          <option value="7">Juli</option><option value="8">Agustus</option>
+          <option value="9">September</option><option value="10">Oktober</option>
+          <option value="11">November</option><option value="12">Desember</option>
+        </select>
+        <select id="filterRegion" class="filter-select text-sm bg-white/10 border border-white/30 rounded-lg px-3 py-1.5 text-white focus:outline-none focus:ring-2 focus:ring-white/50">
+          <option value="all">Semua Wilayah</option>
+          <option value="Jawa">Jawa</option>
+          <option value="Sumatera">Sumatera</option>
+          <option value="Kalimantan">Kalimantan</option>
+          <option value="Sulawesi">Sulawesi</option>
+          <option value="Bali">Bali</option>
+        </select>
+        <span id="lastUpdated" class="text-xs text-blue-200"></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-screen-2xl mx-auto px-6 py-6 space-y-6">
+
+    <!-- KPI CARDS -->
+    <section>
+      <h2 class="section-title">Key Performance Indicators</h2>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="kpi-card">
+          <div class="kpi-icon bg-blue-100 text-blue-600">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <p class="kpi-label">Total Revenue</p>
+            <p class="kpi-value text-blue-600" id="kpiRevenue">—</p>
+            <p class="kpi-sub" id="kpiRevenueSub"></p>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon bg-emerald-100 text-emerald-600">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          </div>
+          <div>
+            <p class="kpi-label">Total Transaksi</p>
+            <p class="kpi-value text-emerald-600" id="kpiTransactions">—</p>
+            <p class="kpi-sub" id="kpiTransactionsSub"></p>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon bg-violet-100 text-violet-600">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+          </div>
+          <div>
+            <p class="kpi-label">Total Qty Terjual</p>
+            <p class="kpi-value text-violet-600" id="kpiQuantity">—</p>
+            <p class="kpi-sub" id="kpiQuantitySub"></p>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon bg-amber-100 text-amber-600">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+          </div>
+          <div>
+            <p class="kpi-label">Rata-rata Diskon</p>
+            <p class="kpi-value text-amber-600" id="kpiDiscount">—</p>
+            <p class="kpi-sub" id="kpiDiscountSub"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROW 1: SALES TREND + REVENUE PER REGION -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="chart-card lg:col-span-2">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">Tren Penjualan Bulanan</h3>
+            <p class="chart-subtitle">Revenue & Jumlah Transaksi per Bulan</p>
+          </div>
+          <span class="badge">Line Chart</span>
+        </div>
+        <div class="chart-body">
+          <canvas id="salesTrendChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">Revenue per Wilayah</h3>
+            <p class="chart-subtitle">Kontribusi pendapatan per region</p>
+          </div>
+          <span class="badge">Doughnut</span>
+        </div>
+        <div class="chart-body">
+          <canvas id="regionChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROW 2: CATEGORY REVENUE + SALES REP -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">Revenue per Kategori Produk</h3>
+            <p class="chart-subtitle">Total pendapatan berdasarkan kategori</p>
+          </div>
+          <span class="badge">Bar Chart</span>
+        </div>
+        <div class="chart-body">
+          <canvas id="categoryRevenueChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">Penjualan per Sales Representative</h3>
+            <p class="chart-subtitle">Performa individual tenaga penjual</p>
+          </div>
+          <span class="badge">Horizontal Bar</span>
+        </div>
+        <div class="chart-body">
+          <canvas id="salesRepChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROW 3: CUSTOMER TYPE + PAYMENT METHOD + CHANNEL -->
+    <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">Tipe Pelanggan</h3>
+            <p class="chart-subtitle">Distribusi B2B vs B2C</p>
+          </div>
+          <span class="badge">Pie</span>
+        </div>
+        <div class="chart-body chart-body-sm">
+          <canvas id="customerTypeChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">Metode Pembayaran</h3>
+            <p class="chart-subtitle">Frekuensi penggunaan</p>
+          </div>
+          <span class="badge">Polar</span>
+        </div>
+        <div class="chart-body chart-body-sm">
+          <canvas id="paymentChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">Saluran Penjualan</h3>
+            <p class="chart-subtitle">Online vs Marketplace vs Offline</p>
+          </div>
+          <span class="badge">Doughnut</span>
+        </div>
+        <div class="chart-body chart-body-sm">
+          <canvas id="channelChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROW 4: SCATTER + TOP 10 -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">Diskon vs Penjualan</h3>
+            <p class="chart-subtitle">Korelasi tingkat diskon dengan revenue transaksi</p>
+          </div>
+          <span class="badge">Scatter</span>
+        </div>
+        <div class="chart-body">
+          <canvas id="scatterChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">Top 10 Transaksi Tertinggi</h3>
+            <p class="chart-subtitle">Produk dengan revenue terbesar per transaksi</p>
+          </div>
+          <span class="badge">Bar Chart</span>
+        </div>
+        <div class="chart-body">
+          <canvas id="top10Chart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROW 5: QTY PER CATEGORY -->
+    <section>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <h3 class="chart-title">Quantity Terjual per Kategori</h3>
+            <p class="chart-subtitle">Total unit terjual untuk setiap kategori produk</p>
+          </div>
+          <span class="badge">Bar Chart</span>
+        </div>
+        <div class="chart-body chart-body-md">
+          <canvas id="qtyCategoryChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="text-center py-5 text-slate-400 text-xs border-t border-slate-200 mt-4">
+    Dashboard Penjualan 2024 &mdash; Data diperbarui secara dinamis dari <code>data.json</code>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
